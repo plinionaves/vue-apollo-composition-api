@@ -28,6 +28,11 @@ export default createComponent({
     const { loading, mutate: saveProduct } = useMutation(
       createProductMutation,
       {
+        context: {
+          headers: {
+            Authorization: 'Bearer token',
+          },
+        },
         update: (cache, res) => {
           console.log('Server Res: ', res);
           const {

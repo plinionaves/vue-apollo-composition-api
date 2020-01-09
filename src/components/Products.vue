@@ -37,6 +37,11 @@ export default createComponent({
     const { mutate: deleteProductExec } = useMutation<Product, { id: string }>(
       deleteProductMutation,
       {
+        context: {
+          headers: {
+            Authorization: 'Bearer token',
+          },
+        },
         update: (cache, response) => {
           console.log('Res: ', response);
           const {
