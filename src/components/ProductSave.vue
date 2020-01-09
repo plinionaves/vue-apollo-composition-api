@@ -17,6 +17,7 @@ import { createComponent, reactive } from '@vue/composition-api';
 import { useMutation } from '@vue/apollo-composable';
 
 import { Product } from '../models';
+import productsQuery from '@/graphql/products.query.gql';
 import createProductMutation from '@/graphql/createProduct.mutation.gql';
 
 export default createComponent({
@@ -28,7 +29,24 @@ export default createComponent({
       unit: '',
     });
 
-    const { mutate: saveProduct } = useMutation(createProductMutation);
+    const { mutate: saveProduct } = useMutation(createProductMutation, {
+      context: {
+        headers: {
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZGRkZDk3YjJlZDg4YzAwMjljM2YxZTUiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE1Nzg1OTg2NDMsImV4cCI6MTU3ODYwNTg0M30.vHFpfTswKm31W1Op6v7ha_Aa9BFucEMwpjagm8RRg4s',
+        },
+      },
+      update: (cache, res) => {
+        console.log('Server Res: ', res);
+        const {
+          data: { createProduct },
+        } = res;
+        const query = productsQuery;
+        const data = cache.readQuery({ query });
+        data.products = [...data.products, createProduct];
+        cache.writeQuery({ query, data });
+      },
+    });
 
     const save = async () => {
       try {
