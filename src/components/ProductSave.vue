@@ -23,12 +23,7 @@ import createProductMutation from '@/graphql/createProduct.mutation.gql';
 
 export default createComponent({
   setup() {
-    const product = reactive<Product>({
-      name: '',
-      description: '',
-      price: 0,
-      unit: '',
-    });
+    const product = reactive<Product>({});
 
     const { loading, mutate: saveProduct } = useMutation(
       createProductMutation,
