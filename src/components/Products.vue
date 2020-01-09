@@ -22,7 +22,7 @@ export default createComponent({
     const { loading, result } = useQuery<{ products: Product[] }>(
       productsQuery,
     );
-    const products = useResult(result, null, data => data.products);
+    const products = useResult(result);
 
     return {
       loading,
