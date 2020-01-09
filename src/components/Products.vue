@@ -36,6 +36,20 @@ export default createComponent({
 
     const { mutate: deleteProductExec } = useMutation<Product, { id: string }>(
       deleteProductMutation,
+      {
+        update: (cache, response) => {
+          console.log('Res: ', response);
+          const {
+            data: { deleteProduct },
+          } = response;
+          const query = productsQuery;
+          const data = cache.readQuery({ query });
+          data.products = data.products.filter(
+            p => p._id !== deleteProduct._id,
+          );
+          cache.writeQuery({ query, data });
+        },
+      },
     );
 
     const deleteProduct = async (product: Product) => {
