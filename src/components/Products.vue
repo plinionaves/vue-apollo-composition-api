@@ -7,7 +7,8 @@
     <h2 v-if="loading">Loading...</h2>
     <ul v-else>
       <li v-for="product in products" :key="product.id">
-        {{ product.name }} | R$ {{ product.price }}
+        <span>{{ product.name }} | R$ {{ product.price }}</span>
+        <button @click="deleteProduct(product)">x</button>
       </li>
     </ul>
   </div>
@@ -15,10 +16,11 @@
 
 <script lang="ts">
 import { createComponent } from '@vue/composition-api';
-import { useQuery, useResult } from '@vue/apollo-composable';
+import { useQuery, useResult, useMutation } from '@vue/apollo-composable';
 
 import { Product } from '@/models';
 import ProductSave from './ProductSave.vue';
+import deleteProductMutation from '@/graphql/deleteProduct.mutation.gql';
 import productsQuery from '@/graphql/products.query.gql';
 
 export default createComponent({
@@ -32,7 +34,31 @@ export default createComponent({
     );
     const products = useResult(result);
 
+    const { mutate: deleteProductExec } = useMutation<Product, { id: string }>(
+      deleteProductMutation,
+    );
+
+    const deleteProduct = async (product: Product) => {
+      const { _id, name } = product;
+
+      const confirm = window.confirm(
+        `Are you sure to delete "${name}" product?`,
+      );
+
+      if (confirm) {
+        let message: string;
+        try {
+          await deleteProductExec({ _id });
+          message = 'Sucess!';
+        } catch (err) {
+          message = `Error deleting product: ${err.message}`;
+        }
+        window.alert(message);
+      }
+    };
+
     return {
+      deleteProduct,
       loading,
       products,
     };

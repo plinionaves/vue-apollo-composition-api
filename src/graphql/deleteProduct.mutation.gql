@@ -1,0 +1,9 @@
+mutation DeleteProduct($_id: ID!) {
+  deleteProduct(_id: $_id) {
+    _id
+    name
+    description
+    price
+    unit
+  }
+}
